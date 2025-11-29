@@ -17,10 +17,25 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Get all employees
+// Get all employees (with optional filters)
 router.get("/employees", async (req, res) => {
   try {
-    const employees = await Employee.find();
+    const { position, department } = req.query;
+
+    const filter = {};
+
+    if (position) {
+      // case-insensitive contains match on position
+      filter.position = { $regex: new RegExp(position, "i") };
+    }
+
+    if (department) {
+      // case-insensitive contains match on department
+      filter.department = { $regex: new RegExp(department, "i") };
+    }
+
+    const employees = await Employee.find(filter);
+
     res.status(200).json(
       employees.map((emp) => ({
         employee_id: emp._id,
