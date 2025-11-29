@@ -8,6 +8,7 @@ const employeeSchema = new mongoose.Schema({
   salary: Number,
   date_of_joining: Date,
   department: String,
+  photo_url: { type: String, default: "" },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
 });
