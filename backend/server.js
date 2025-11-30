@@ -12,15 +12,25 @@ const employeeRoutes = require("./routes/employee.routes");
 
 const app = express();
 
-const SERVER_PORT =
-  process.env.SERVER_PORT || 3001;
-const DB_CONNECTION_STRING =
-  process.env.DB_CONNECTION_STRING ||
+const SERVER_PORT = process.env.SERVER_PORT || process.env.PORT || 3001;
+const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING ||
   "mongodb+srv://nishi:nishi27@cluster0.pddryou.mongodb.net/comp3123_assignment1?retryWrites=true&w=majority&appName=Cluster0";
+
+// Allow localhost and Vercel frontend
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://employee-manager-umber.vercel.app",
+];
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: "GET,POST,PUT,DELETE,OPTIONS",
     allowedHeaders: "Content-Type, Authorization",
   })
@@ -29,7 +39,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//uploaded images
+// uploaded images
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/v1/user", userRoutes);
